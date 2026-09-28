@@ -2,33 +2,28 @@
 #define PERSON_H
 
 #include <string>
+#include <vector>
 #include <iostream>
-
-const int NUM_HW = 3; // fixed number of homework scores for now
 
 class Person {
 private:
     std::string name;
     std::string surname;
-    double homework[NUM_HW];
+    std::vector<double> homework;
     double exam;
     double finalGrade;
 
 public:
-    // Constructors, rule of three
-    Person();                          // default constructor
-    Person(const Person& other);       // copy constructor
-    Person& operator=(const Person& other); // copy assignment
-    ~Person();                         // destructor
+    Person();
+    Person(const Person& other);
+    Person& operator=(const Person& other);
+    ~Person();
 
-    // Input/output
     friend std::istream& operator>>(std::istream& in, Person& p);
     friend std::ostream& operator<<(std::ostream& out, const Person& p);
 
-    // Calculation
-    void calculateFinalGrade(); // uses average of homework for now
+    void calculateFinalGrade(bool useMedian);
 
-    // Getters (needed to print/sort later)
     std::string getName() const;
     std::string getSurname() const;
     double getFinalGrade() const;
