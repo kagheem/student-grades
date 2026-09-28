@@ -23,6 +23,8 @@ public:
     friend std::ostream& operator<<(std::ostream& out, const Person& p);
 
     void calculateFinalGrade(bool useMedian);
+    void generateRandomScores(int numHomework);
+    void setNameSurname(const std::string& n, const std::string& s);
 
     std::string getName() const;
     std::string getSurname() const;

@@ -1,6 +1,8 @@
 #include "Person.h"
 #include <iomanip>
 #include <algorithm>
+#include <cstdlib>
+#include <ctime>
 
 Person::Person() {
     name = "";
@@ -16,6 +18,7 @@ Person::Person(const Person& other) {
     exam = other.exam;
     finalGrade = other.finalGrade;
 }
+
 
 Person& Person::operator=(const Person& other) {
     if (this == &other) {
@@ -83,6 +86,17 @@ void Person::calculateFinalGrade(bool useMedian) {
     }
 
     finalGrade = 0.4 * homeworkScore + 0.6 * exam;
+}
+void Person::generateRandomScores(int numHomework) {
+    homework.clear();
+    for (int i = 0; i < numHomework; i++) {
+        homework.push_back(rand() % 11); // random score 0–10
+    }
+    exam = rand() % 11;
+}
+void Person::setNameSurname(const std::string& n, const std::string& s) {
+    name = n;
+    surname = s;
 }
 
 std::string Person::getName() const {
