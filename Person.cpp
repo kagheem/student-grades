@@ -9,9 +9,13 @@ Person::Person() {
     surname = "";
     exam = 0.0;
     finalGrade = 0.0;
+    finalGradeAvg = 0.0;
+    finalGradeMed = 0.0;
 }
 
 Person::Person(const Person& other) {
+    finalGradeAvg = other.finalGradeAvg;
+    finalGradeMed = other.finalGradeMed;
     name = other.name;
     surname = other.surname;
     homework = other.homework;
@@ -21,6 +25,8 @@ Person::Person(const Person& other) {
 
 
 Person& Person::operator=(const Person& other) {
+    finalGradeAvg = other.finalGradeAvg;
+    finalGradeMed = other.finalGradeMed;
     if (this == &other) {
         return *this;
     }
@@ -33,6 +39,7 @@ Person& Person::operator=(const Person& other) {
 }
 
 Person::~Person() {
+   
     // nothing to manually free — std::vector cleans up after itself
 }
 
@@ -97,6 +104,50 @@ void Person::generateRandomScores(int numHomework) {
 void Person::setNameSurname(const std::string& n, const std::string& s) {
     name = n;
     surname = s;
+}
+
+bool Person::readFromLine(std::istream& in, int numHomework) {
+    if (!(in >> name >> surname)) {
+        return false; // end of file or bad read
+    }
+
+    homework.clear();
+    for (int i = 0; i < numHomework; i++) {
+        double score;
+        in >> score;
+        homework.push_back(score);
+    }
+
+    in >> exam;
+    return true;
+}
+void Person::calculateBothGrades() {
+    double sum = 0.0;
+    for (double score : homework) {
+        sum += score;
+    }
+    double average = sum / homework.size();
+
+    std::vector<double> sorted = homework;
+    std::sort(sorted.begin(), sorted.end());
+    size_t mid = sorted.size() / 2;
+    double median;
+    if (sorted.size() % 2 == 0) {
+        median = (sorted[mid - 1] + sorted[mid]) / 2.0;
+    } else {
+        median = sorted[mid];
+    }
+
+    finalGradeAvg = 0.4 * average + 0.6 * exam;
+    finalGradeMed = 0.4 * median + 0.6 * exam;
+}
+
+double Person::getFinalGradeAvg() const {
+    return finalGradeAvg;
+}
+
+double Person::getFinalGradeMed() const {
+    return finalGradeMed;
 }
 
 std::string Person::getName() const {

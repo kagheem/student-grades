@@ -12,6 +12,8 @@ private:
     std::vector<double> homework;
     double exam;
     double finalGrade;
+    double finalGradeAvg;
+    double finalGradeMed;
 
 public:
     Person();
@@ -25,10 +27,14 @@ public:
     void calculateFinalGrade(bool useMedian);
     void generateRandomScores(int numHomework);
     void setNameSurname(const std::string& n, const std::string& s);
+    bool readFromLine(std::istream& in, int numHomework);
+    void calculateBothGrades();
 
     std::string getName() const;
     std::string getSurname() const;
     double getFinalGrade() const;
+    double getFinalGradeAvg() const;
+    double getFinalGradeMed() const;
 };
 
 #endif
