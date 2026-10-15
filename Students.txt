@@ -1,0 +1,4 @@
+Name       Surname     HW1  HW2  HW3  HW4  HW5  Exam
+Karim      Ait         8    9    10   6    10   9
+Nassim     kach        7    10   8    5    4    6
+Abdeslam   elkhou      6    7    9    8    5    7
