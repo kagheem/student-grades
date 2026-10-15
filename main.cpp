@@ -5,21 +5,39 @@
 #include <algorithm>
 #include <iomanip>
 #include <stdexcept>
+#include <cstdlib>
+#include <ctime>
 #include "FileGenerator.h"
 #include "GradeSplitter.h"
 
 int main() {
     try {
-                srand(static_cast<unsigned int>(time(nullptr)));
+        srand(static_cast<unsigned int>(time(nullptr)));
 
+        FileGenerator::generateFile("students_1000.txt", 1000, 5);
         FileGenerator::generateFile("students_10000.txt", 10000, 5);
         FileGenerator::generateFile("students_100000.txt", 100000, 5);
         FileGenerator::generateFile("students_1000000.txt", 1000000, 5);
         FileGenerator::generateFile("students_10000000.txt", 10000000, 5);
+
+        GradeSplitter::processFile("students_1000.txt", 5);
         GradeSplitter::processFile("students_10000.txt", 5);
         GradeSplitter::processFile("students_100000.txt", 5);
         GradeSplitter::processFile("students_1000000.txt", 5);
         GradeSplitter::processFile("students_10000000.txt", 5);
+
+        GradeSplitter::processFileList("students_1000.txt", 5);
+        GradeSplitter::processFileList("students_10000.txt", 5);
+        GradeSplitter::processFileList("students_100000.txt", 5);
+        GradeSplitter::processFileList("students_1000000.txt", 5);
+        GradeSplitter::processFileList("students_10000000.txt", 5);
+
+        GradeSplitter::processFileDeque("students_1000.txt", 5);
+        GradeSplitter::processFileDeque("students_10000.txt", 5);
+        GradeSplitter::processFileDeque("students_100000.txt", 5);
+        GradeSplitter::processFileDeque("students_1000000.txt", 5);
+        GradeSplitter::processFileDeque("students_10000000.txt", 5);
+
         std::ifstream file("Students.txt");
         if (!file) {
             throw std::runtime_error("Could not open Students.txt");

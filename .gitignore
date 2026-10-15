@@ -1,4 +1,8 @@
 students_*.txt
 passed_*.txt
 failed_*.txt
+passed_list_*.txt
+failed_list_*.txt
+passed_deque_*.txt
+failed_deque_*.txt
 *.exe
