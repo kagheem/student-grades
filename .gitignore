@@ -1,0 +1,4 @@
+students_*.txt
+passed_*.txt
+failed_*.txt
+*.exe
