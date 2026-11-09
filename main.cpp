@@ -1,86 +1,73 @@
-#include "Person.h"
 #include <iostream>
 #include <fstream>
-#include <vector>
-#include <algorithm>
-#include <iomanip>
+#include <string>
 #include <stdexcept>
 #include <cstdlib>
 #include <ctime>
 #include "FileGenerator.h"
 #include "GradeSplitter.h"
 
+bool fileExists(const std::string& name) {
+    std::ifstream f(name);
+    return f.good();
+}
+
+void runStrategy(int container, const std::string& filename, int strategy) {
+    if (container == 1 || container == 4) {
+        GradeSplitter::run<std::vector<Person>>("vector", filename, 5, strategy);
+    }
+    if (container == 2 || container == 4) {
+        GradeSplitter::run<std::list<Person>>("list", filename, 5, strategy);
+    }
+    if (container == 3 || container == 4) {
+        GradeSplitter::run<std::deque<Person>>("deque", filename, 5, strategy);
+    }
+}
+
 int main() {
-    try {
-        srand(static_cast<unsigned int>(time(nullptr)));
+    srand(static_cast<unsigned int>(time(nullptr)));
 
-        FileGenerator::generateFile("students_1000.txt", 1000, 5);
-        FileGenerator::generateFile("students_10000.txt", 10000, 5);
-        FileGenerator::generateFile("students_100000.txt", 100000, 5);
-        FileGenerator::generateFile("students_1000000.txt", 1000000, 5);
-        FileGenerator::generateFile("students_10000000.txt", 10000000, 5);
+    const int sizes[] = {1000, 10000, 100000, 1000000, 10000000};
 
-        GradeSplitter::processFile("students_1000.txt", 5);
-        GradeSplitter::processFile("students_10000.txt", 5);
-        GradeSplitter::processFile("students_100000.txt", 5);
-        GradeSplitter::processFile("students_1000000.txt", 5);
-        GradeSplitter::processFile("students_10000000.txt", 5);
-
-        GradeSplitter::processFileList("students_1000.txt", 5);
-        GradeSplitter::processFileList("students_10000.txt", 5);
-        GradeSplitter::processFileList("students_100000.txt", 5);
-        GradeSplitter::processFileList("students_1000000.txt", 5);
-        GradeSplitter::processFileList("students_10000000.txt", 5);
-
-        GradeSplitter::processFileDeque("students_1000.txt", 5);
-        GradeSplitter::processFileDeque("students_10000.txt", 5);
-        GradeSplitter::processFileDeque("students_100000.txt", 5);
-        GradeSplitter::processFileDeque("students_1000000.txt", 5);
-        GradeSplitter::processFileDeque("students_10000000.txt", 5);
-
-        std::ifstream file("Students.txt");
-        if (!file) {
-            throw std::runtime_error("Could not open Students.txt");
-        }
-
-        std::string headerLine;
-        std::getline(file, headerLine);
-
-        const int NUM_HOMEWORK = 5;
-
-        std::vector<Person> students;
-        Person temp;
-        while (temp.readFromLine(file, NUM_HOMEWORK)) {
-            temp.calculateBothGrades();
-            students.push_back(temp);
-        }
-
-        std::sort(students.begin(), students.end(), [](const Person& a, const Person& b) {
-            if (a.getSurname() != b.getSurname()) {
-                return a.getSurname() < b.getSurname();
+    while (true) {
+        try {
+            int sizeChoice;
+            std::cout << "=== Student grades ===" << std::endl;
+            std::cout << "File size: 1) 1000  2) 10000  3) 100000  4) 1000000  5) 10000000  0) exit" << std::endl;
+            std::cout << "Choose: ";
+            if (!(std::cin >> sizeChoice) || sizeChoice == 0) {
+                break;
             }
-            return a.getName() < b.getName();
-        });
+            if (sizeChoice < 1 || sizeChoice > 5) {
+                std::cout << "Unknown size." << std::endl << std::endl;
+                continue;
+            }
 
-        std::cout << std::left
-                   << std::setw(12) << "Name"
-                   << std::setw(12) << "Surname"
-                   << std::setw(14) << "Final (Avg.)"
-                   << "Final (Med.)" << std::endl;
-        std::cout << "---------------------------------------------------" << std::endl;
+            int container;
+            std::cout << "Container: 1) vector  2) list  3) deque  4) all three: ";
+            std::cin >> container;
 
-        std::cout << std::fixed << std::setprecision(2);
-        for (const Person& p : students) {
-            std::cout << std::left
-                       << std::setw(12) << p.getName()
-                       << std::setw(12) << p.getSurname()
-                       << std::setw(14) << p.getFinalGradeAvg()
-                       << p.getFinalGradeMed() << std::endl;
+            int strategy;
+            std::cout << "Strategy: 1) two new containers  2) one new container  3) both: ";
+            std::cin >> strategy;
+            std::cout << std::endl;
+
+            int n = sizes[sizeChoice - 1];
+            std::string filename = "students_" + std::to_string(n) + ".txt";
+            if (!fileExists(filename)) {
+                std::cout << "Generating " << filename << " ..." << std::endl;
+                FileGenerator::generateFile(filename, n, 5);
+            }
+
+            if (strategy == 1 || strategy == 3) {
+                runStrategy(container, filename, 1);
+            }
+            if (strategy == 2 || strategy == 3) {
+                runStrategy(container, filename, 2);
+            }
+        } catch (const std::exception& e) {
+            std::cerr << "Error: " << e.what() << std::endl;
         }
-
-    } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
-        return 1;
     }
 
     return 0;
