@@ -48,7 +48,8 @@ int main() {
             std::cin >> container;
 
             int strategy;
-            std::cout << "Strategy: 1) two new containers  2) one new container  3) both: ";
+            std::cout << "Strategy: 1) two new containers  2) one new container (manual loop)  "
+                      << "3) one new container (algorithms)  4) all: ";
             std::cin >> strategy;
             std::cout << std::endl;
 
@@ -59,11 +60,10 @@ int main() {
                 FileGenerator::generateFile(filename, n, 5);
             }
 
-            if (strategy == 1 || strategy == 3) {
-                runStrategy(container, filename, 1);
-            }
-            if (strategy == 2 || strategy == 3) {
-                runStrategy(container, filename, 2);
+            for (int s = 1; s <= 3; s++) {
+                if (strategy == s || strategy == 4) {
+                    runStrategy(container, filename, s);
+                }
             }
         } catch (const std::exception& e) {
             std::cerr << "Error: " << e.what() << std::endl;

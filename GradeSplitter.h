@@ -8,6 +8,8 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <iterator>
+#include <algorithm>
 #include <chrono>
 #include <stdexcept>
 
@@ -41,9 +43,9 @@ private:
     }
 
 public:
-    // containerName: only used for printing and output file names
-    // strategy 1: copy students into two NEW containers (passed and failed)
-    // strategy 2: copy only failed students into ONE new container and remove them from the original
+    // strategy 1: copy students into two NEW containers (passed and failed), algorithms (copy_if)
+    // strategy 2: ONE new container (failed), manual loop with erase for every failed student (slow)
+    // strategy 3: ONE new container (failed), algorithms: copy_if + remove_if + erase (fast)
     template <typename Container>
     static void run(const std::string& containerName, const std::string& filename,
                     int numHomework, int strategy) {
@@ -66,27 +68,25 @@ public:
         auto t1 = Clock::now();
 
         // ---- Calculate grades ----
-        for (Person& p : students) {
+        std::for_each(students.begin(), students.end(), [](Person& p) {
             p.calculateBothGrades();
-        }
+        });
         auto t2 = Clock::now();
 
         size_t total = students.size();
+
+        auto isFailed = [](const Person& p) { return p.getFinalGradeAvg() < 5.0; };
+        auto isPassed = [](const Person& p) { return p.getFinalGradeAvg() >= 5.0; };
 
         // ---- Split ----
         Container passed;
         Container failed;
         if (strategy == 1) {
-            for (const Person& p : students) {
-                if (p.getFinalGradeAvg() >= 5.0) {
-                    passed.push_back(p);
-                } else {
-                    failed.push_back(p);
-                }
-            }
-        } else {
+            std::copy_if(students.begin(), students.end(), std::back_inserter(passed), isPassed);
+            std::copy_if(students.begin(), students.end(), std::back_inserter(failed), isFailed);
+        } else if (strategy == 2) {
             for (auto it = students.begin(); it != students.end(); ) {
-                if (it->getFinalGradeAvg() < 5.0) {
+                if (isFailed(*it)) {
                     failed.push_back(*it);
                     it = students.erase(it);   // erase returns the next element
                 } else {
@@ -94,11 +94,15 @@ public:
                 }
             }
             shrink(students);
+        } else {
+            std::copy_if(students.begin(), students.end(), std::back_inserter(failed), isFailed);
+            students.erase(std::remove_if(students.begin(), students.end(), isFailed), students.end());
+            shrink(students);
         }
         auto t3 = Clock::now();
 
         // ---- Write ----
-        // Strategy 1: "passed" is its own container. Strategy 2: the original now holds only passed students.
+        // Strategy 1: "passed" is its own container. Strategies 2 and 3: the original now holds only passed students.
         const Container& passedRef = (strategy == 1) ? passed : students;
         writeStudents("passed_s" + std::to_string(strategy) + "_" + containerName + "_" + filename, passedRef);
         writeStudents("failed_s" + std::to_string(strategy) + "_" + containerName + "_" + filename, failed);

@@ -1,8 +1,14 @@
+# generated data and output files
 students_*.txt
 passed_*.txt
 failed_*.txt
-passed_list_*.txt
-failed_list_*.txt
-passed_deque_*.txt
-failed_deque_*.txt
+
+# compiled files
 *.exe
+*.o
+/main
+
+# build folders and IDE files
+build/
+.vscode/
+.vs/
